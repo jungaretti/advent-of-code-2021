@@ -8,29 +8,25 @@ int cntdpthbywndw(FILE *file, int windowSize)
 {
     int solution = 0;
 
-    int counter = 0;
+    int counted = 0;
     int prevSum = INT_MAX;
+    int windowSum = 0;
     int window[windowSize];
     char line[LINE_BUFFER_SIZE];
     while (fgets(line, LINE_BUFFER_SIZE, file) != NULL)
     {
-        // Parse the current depth
+        // Evict the oldest element
+        int target = counted % windowSize;
+        int evicted = window[target];
+
         int current = atoi(line);
-
-        // Add depth to sliding window
-        int target = counter % windowSize;
         window[target] = current;
-        counter++;
+        counted++;
 
-        // Make sure to fill all slots before checking
-        if (counter >= windowSize)
+        windowSum += current;
+        if (counted >= windowSize)
         {
-            int windowSum = 0;
-            for (size_t i = 0; i < windowSize; i++)
-            {
-                windowSum += window[i];
-            }
-
+            windowSum -= evicted;
             if (windowSum > prevSum)
             {
                 solution++;
